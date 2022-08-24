@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { request } from "../service/fetch";
 
 export default function Page2() {
 	const navigate = useNavigate();
+	const [hasError, setHasError] = useState<boolean>(false);
+	const [fetchError, setFetchError] = useState<string>('');
 	
 	const redirect = () => {
 		return navigate('/page2');
@@ -18,9 +20,11 @@ export default function Page2() {
 		try {			
 			const res = await request();
 			if (isOk(res)) return redirect();
-			return alert("Erro: payload inesperado");
+			setFetchError("Erro: payload inesperado");
+			setHasError(true);
 		} catch (error: any) {
-			alert("Erro inesperado: " + error.message);
+			setFetchError("Erro inesperado: " + error.message);
+			setHasError(true);
 		}
 	}
 
@@ -28,6 +32,7 @@ export default function Page2() {
 		<div className="App">
 		<header className="App-header">
 			<h1>Page 1</h1>
+			{hasError ? (<div className="error">{ fetchError }</div>) : null }
 			<button onClick={makeRequest}>Fetch</button>
 			<button onClick={() => navigate('/page2')}>Go to page2</button>
 			<button onClick={() => navigate('/')}>Go to home</button>
